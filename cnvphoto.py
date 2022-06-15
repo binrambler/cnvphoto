@@ -5,6 +5,7 @@ import sys
 
 CURR_DIR = Path.cwd()
 FILE_INI = Path(CURR_DIR, 'cnvphoto.ini')
+FILE_LOG = Path(CURR_DIR, 'cnvphoto.log')
 
 WORK_DIR = CURR_DIR
 MAX_LENGTH_OR_WIDTH = 0
@@ -33,6 +34,7 @@ def drawProgressBar(n_file, n_files, n_resize):
     sys.stdout.flush()
 
 def resize_file(dir):
+    file_err = []
     n_files = len(list(Path(dir).glob('*.jpg')))
     n_resize = 0
     n_file = 0
@@ -47,9 +49,17 @@ def resize_file(dir):
                 image_resize = image.resize(size_new)
                 image_resize.save(f)
         except:
-            print(f'\nОшибка обработки файла: {f.name}')
+            file_err.append(f.name)
         drawProgressBar(n_file, n_files, n_resize)
+    return n_resize, file_err
 
+def log_write(n_resize, file_err):
+    with open(FILE_LOG, 'w', encoding='cp1251') as f:
+        f.write(f'Кол-во измененных файлов: {n_resize}')
+        f.write(f'\n\nФайлы, которые не удалось обработать:')
+        for i in file_err:
+            f.write(f'\n{i}')
 
 read_ini()
-resize_file(WORK_DIR)
+n_resize, file_err = resize_file(WORK_DIR)
+log_write(n_resize, file_err)
