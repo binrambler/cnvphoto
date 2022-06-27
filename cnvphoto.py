@@ -1,4 +1,4 @@
-import pathlib
+﻿import pathlib
 from PIL import Image
 import sys
 
@@ -24,6 +24,7 @@ def resize_file(dir):
         try:
             image = Image.open(f)
             ratio = max(image.size) / MAX_LENGTH_OR_WIDTH
+            # qq
             if ratio != 1:
                 n_resize += 1
                 size_new = tuple(map(lambda x: int(x / ratio), image.size))
@@ -32,12 +33,13 @@ def resize_file(dir):
         except:
             file_err.append(f.name)
         drawProgressBar(n_file, n_files, n_resize)
-    return n_resize, file_err
+    return n_files, n_resize, file_err
 
 
-def log_write(n_resize, file_err):
+def log_write(n_files, n_resize, file_err):
     with open(FILE_LOG, 'w', encoding='cp1251') as f:
-        f.write(f'Кол-во измененных файлов: {n_resize}')
+        f.write(f'Кол-во просмотренных файлов: {n_files}')
+        f.write(f'\nКол-во измененных файлов: {n_resize}')
         f.write(f'\n\nФайлы, которые не удалось обработать:')
         for i in file_err:
             f.write(f'\n{i}')
@@ -45,9 +47,8 @@ def log_write(n_resize, file_err):
 
 if __name__ == "__main__":
     # удаляем лог-файл
-    if FILE_LOG.exists():
-        FILE_LOG.unlink()
+    FILE_LOG.unlink(missing_ok=True)
     # изменяем разрешение файлов
-    n_resize, file_err = resize_file(WORK_DIR)
+    n_files, n_resize, file_err = resize_file(WORK_DIR)
     # файлы, которые не удалось обработать записываем в лог-файл
-    log_write(n_resize, file_err)
+    log_write(n_files, n_resize, file_err)
