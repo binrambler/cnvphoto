@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # удаляем лог-файл
     if FILE_LOG.exists():
         FILE_LOG.unlink()
-    # изменяеи разрешение файлов
+    # изменяем разрешение файлов
     n_resize, file_err = resize_file(WORK_DIR)
     # файлы, которые не удалось обработать записываем в лог-файл
     log_write(n_resize, file_err)
