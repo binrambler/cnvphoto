@@ -2,9 +2,11 @@
 from PIL import Image
 import sys
 
+
 CURR_DIR = pathlib.Path.cwd()
 FILE_LOG = pathlib.Path(CURR_DIR, 'cnvphoto.log')
 WORK_DIR = pathlib.Path('//z2/base/ftp/foto')
+BAD_DIR = pathlib.Path(WORK_DIR, 'BAD')
 # макисмальная длина самой длинной стороны
 MAX_LENGTH_OR_WIDTH = 640
 
@@ -31,6 +33,8 @@ def resize_file(dir):
                 image_resize = image.resize(size_new)
                 image_resize.save(f)
         except:
+            target = pathlib.Path(BAD_DIR, f.name)
+            f.rename(target)
             file_err.append(f.name)
         drawProgressBar(n_file, n_files, n_resize)
     return n_files, n_resize, file_err
@@ -46,8 +50,9 @@ def log_write(n_files, n_resize, file_err):
 
 
 if __name__ == "__main__":
-    # удаляем лог-файл
+    # удаляем лог-файл и создаем каталог
     FILE_LOG.unlink(missing_ok=True)
+    pathlib.Path.mkdir(BAD_DIR, exist_ok=True)
     # изменяем разрешение файлов
     n_files, n_resize, file_err = resize_file(WORK_DIR)
     # файлы, которые не удалось обработать записываем в лог-файл
